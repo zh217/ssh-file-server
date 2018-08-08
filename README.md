@@ -1,6 +1,12 @@
 # SSH file server
 
-A python package for conveniently access files on SSH
+A python package for conveniently access files on SSH.
+
+Install with:
+
+```bash
+pip install ssh_file_server
+```
 
 Example usage:
 
