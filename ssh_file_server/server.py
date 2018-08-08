@@ -1,3 +1,5 @@
+import subprocess
+
 import paramiko
 
 
@@ -19,6 +21,18 @@ class _LocalFileServer:
 
     def open(self, *args, **kwargs):
         return open(*args, **kwargs)
+
+    def exec(self, cmd):
+        res = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+        try:
+            out = res.stdout.decode('utf-8').splitlines()
+        except Exception:
+            out = []
+        try:
+            err = res.stderr.decode('utf-8').splitlines()
+        except Exception:
+            err = []
+        return out, err
 
 
 class FileServer:
@@ -53,3 +67,14 @@ class FileServer:
 
     def open(self, *args, **kwargs):
         return self._sftp.file(*args, **kwargs)
+
+    def exec(self, cmd):
+        _, out_f, err_f = self._client.exec_command(cmd)
+        try:
+            out = out_f.readlines()
+            err = err_f.readlines()
+        finally:
+            out_f.close()
+            err_f.close()
+
+        return out, err

@@ -2,10 +2,10 @@
 
 A python package for conveniently access files on SSH.
 
-Install with:
+Requires python 3.5 or above. Install with:
 
 ```bash
-pip install ssh_file_server
+pip3 install ssh_file_server
 ```
 
 Example usage:
@@ -16,6 +16,9 @@ from ssh_file_server import FileServer
 with FileServer('your.ssh.host', 'username') as s:
     with s.open('./a-file', 'r') as file:
         print(file.readlines())
+    stdout, stderr = s.exec('ls -lh .')
+    for l in stdout:
+        print(l)
 ```
 
 Authentication details (RSA keys, known-hosts) will be read from the current user account.
