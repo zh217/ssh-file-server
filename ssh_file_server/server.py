@@ -22,14 +22,20 @@ class _LocalFileServer:
     def open(self, *args, **kwargs):
         return open(*args, **kwargs)
 
-    def exec(self, cmd):
+    def exec(self, cmd, bytes=False):
         res = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
         try:
-            out = res.stdout.decode('utf-8').splitlines()
+            if bytes:
+                out = res.stdout.splitlines()
+            else:
+                out = res.stdout.decode('utf-8').splitlines()
         except Exception:
             out = []
         try:
-            err = res.stderr.decode('utf-8').splitlines()
+            if bytes:
+                err = res.stderr.splitlines()
+            else:
+                err = res.stderr.decode('utf-8').splitlines()
         except Exception:
             err = []
         return out, err
@@ -68,11 +74,15 @@ class FileServer:
     def open(self, *args, **kwargs):
         return self._sftp.file(*args, **kwargs)
 
-    def exec(self, cmd):
+    def exec(self, cmd, bytes=False):
         _, out_f, err_f = self._client.exec_command(cmd)
         try:
-            out = out_f.readlines()
-            err = err_f.readlines()
+            if bytes:
+                out = out_f.read().splitlines()
+                err = err_f.read().splitlines()
+            else:
+                out = out_f.read().decode('utf-8').splitlines()
+                err = err_f.read().decode('utf-8').splitlines()
         finally:
             out_f.close()
             err_f.close()
